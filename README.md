@@ -1,3 +1,5 @@
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
+
 # Hass Amplifi
 
 A sensor hass integration that allows you to monitor devices connected to Amplifi on Wifi (LAN ports in progress).
