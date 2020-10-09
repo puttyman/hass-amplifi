@@ -81,11 +81,11 @@ class AmplifiDeviceSensor(CoordinatorEntity):
         self.connected = True
 
         if self.data is not None and "Description" in self.data:
-            self.name = self.data["Description"]
+            self.name = f"{DOMAIN}_{self.data['Description']}"
         elif self.data is not None and "HostName" in self.data:
-            self.name = self.data["HostName"]
+            self.name = f"{DOMAIN}_{self.data['HostName']}"
         elif self.data is not None and "Address" in self.data:
-            self.name = self.data["Address"]
+            self.name = f"{DOMAIN}_{self.data['Address']}"
         else:
             self.name = macAddr
 
