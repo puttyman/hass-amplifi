@@ -1,0 +1,12 @@
+{
+  "domain": "amplifi",
+  "name": "Amplifi",
+  "config_flow": true,
+  "documentation": "https://www.zz",
+  "requirements": [],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": ["@puttyman"]
+}
