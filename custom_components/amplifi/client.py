@@ -86,7 +86,7 @@ class AmplifiClient:
         try:
             devices = await resp.json()
 
-            _LOGGER.debug(json.dumps(devices))
+            # _LOGGER.debug(json.dumps(devices))
             return devices
         except (Exception) as error:
             _LOGGER.error("[GET] '%s' - failed" % (info_async_url))
