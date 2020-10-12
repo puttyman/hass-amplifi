@@ -30,13 +30,6 @@ Do you you have [HACS](https://community.home-assistant.io/t/custom-component-ha
 
 You can setup this component by using HA integration by going to Configuration -> Integration. Then click on the `+` bottom right button. Search for `Amplifi`. Simply enter your hostname and password for your Amplifi router.
 
-### Configure in config.yaml
-
-When you have installed shelly and make sure it exists under `custom_components` folder it is time to configure it in Home Assistant.
-
-It is very easy, just add `shelly:` to your `configuration.yaml`
-
-
 ## Supported devices
 - Amplifi HD firmware version 3.4.2
 
