@@ -28,13 +28,7 @@ Do you you have [HACS](https://community.home-assistant.io/t/custom-component-ha
 
 ## Setup
 
-You can setup this component by using HA integration by going to Configuration -> Integration. Then click on the + button. Simply enter your hostname and password for your Amplifi router.
-
-### HA Integration
-
-When you have installed Shelly you can add it in GUI under HA integration. Use the plus button and search for Shelly. You need to specify the prefix that is used as first part of the entity_id to avoid conflicts. Default is shelly.
-
-When you have added Shelly to HA you can do the configuration by clicking the settings gear for this integration.
+You can setup this component by using HA integration by going to Configuration -> Integration. Then click on the `+` bottom right button. Search for `Amplifi`. Simply enter your hostname and password for your Amplifi router.
 
 ### Configure in config.yaml
 
