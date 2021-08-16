@@ -1,6 +1,9 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 
-# Hass Amplifi
+# Hass Amplifi 2.0.0
+
+**BREAKING CHANGE**
+ - 2.0.0 now uses device_tracker instead of sensor for wifi presence
 
 A sensor hass integration that allows you to monitor devices connected to Amplifi on Wifi (LAN ports in progress).
 
