@@ -1,0 +1,20 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Amplifi is already configured"
+    },
+    "error": {
+      "cannot_connect": "Enable to connect to amplifi router",
+      "invalid_auth": "Authentication to amplifi router failed",
+      "unknown": "Unexpected error"
+    },
+    "step": {
+      "user": {
+        "data": {
+          "host": "Host",
+          "password": "Password"
+        }
+      }
+    }
+  }
+}

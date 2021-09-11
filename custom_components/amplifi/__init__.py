@@ -3,25 +3,19 @@ import asyncio
 import aiohttp
 import logging
 
-from async_timeout import timeout
-from aiohttp.client_exceptions import ClientConnectorError
-from datetime import datetime, timedelta
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.const import CONF_HOST, CONF_PASSWORD
 
 from .const import DOMAIN, COORDINATOR, ENTITIES, COORDINATOR_LISTENER
-from .client import AmplifiClient, AmplifiClientError
-
-
-# Amplifi integration is setup as a sensor integration
-PLATFORMS = ["sensor"]
+from .coordinator import AmplifiDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
+
+# Amplifi integration is setup as a sensor integration
+PLATFORMS = ["device_tracker", "sensor"]
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
@@ -84,30 +78,3 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
-
-
-class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
-    """Class to manage fetching Amplifi data from router."""
-
-    def __init__(self, hass, session, hostname, password):
-        """Initialize."""
-        self._session = session
-        self._hostname = hostname
-        self._password = password
-
-        self._client = AmplifiClient(self._session, self._hostname, self._password)
-
-        # TODO: Make this a configurable value
-        update_interval = timedelta(seconds=10)
-        _LOGGER.debug("Data will be update every %s", update_interval)
-
-        super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=update_interval)
-
-    async def _async_update_data(self):
-        """Update data via library."""
-        try:
-            async with timeout(10):
-                devices = await self._client.async_get_devices()
-        except (AmplifiClientError, ClientConnectorError) as error:
-            raise UpdateFailed(error) from error
-        return devices
