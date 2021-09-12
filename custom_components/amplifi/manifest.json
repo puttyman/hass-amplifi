@@ -9,5 +9,8 @@
   "zeroconf": [],
   "homekit": {},
   "dependencies": [],
-  "codeowners": ["@puttyman"]
+  "codeowners": [
+    "@puttyman"
+  ],
+  "version": "2.0.0"
 }
