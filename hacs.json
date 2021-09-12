@@ -1,5 +1,6 @@
 {
     "name": "Hass Amplifi",
     "iot_class": "Local Polling",
+    "homeassistant": "0.117.0",
     "render_readme": true
 }

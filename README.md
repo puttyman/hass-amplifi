@@ -35,7 +35,6 @@ You can setup this component by using HA integration by going to Configuration -
 
 ## Supported devices
 - Amplifi HD firmware version >= 3.4.2
-- Amplifi Alien (Limited)
 
 ## Supported HA
 - 2021.9.5
