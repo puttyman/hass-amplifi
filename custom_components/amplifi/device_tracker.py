@@ -23,7 +23,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     ][COORDINATOR]
 
     @callback
-    def async_discover_sensor():
+    def async_discover_device_tracker():
         """Discover and add a discovered device_tracker."""
         for mac_addr in coordinator.wifi_devices:
             if mac_addr not in hass.data[DOMAIN][config_entry.entry_id][ENTITIES]:
@@ -50,13 +50,15 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                     ]
                 )
 
-    hass.data[DOMAIN][config_entry.entry_id][
-        COORDINATOR_LISTENER
-    ] = async_discover_sensor
+    @callback
+    def async_unsub_discover_device_tracker():
+        """Stop discovery when config entry is removed."""
+        coordinator.async_remove_listener(async_discover_device_tracker)
 
-    async_discover_sensor()
+    async_discover_device_tracker()
 
-    coordinator.async_add_listener(async_discover_sensor)
+    coordinator.async_add_listener(async_discover_device_tracker)
+    config_entry.async_on_unload(async_unsub_discover_device_tracker)
 
 
 class AmplifiWifiDeviceTracker(CoordinatorEntity, ScannerEntity):
@@ -143,14 +145,12 @@ class AmplifiWifiDeviceTracker(CoordinatorEntity, ScannerEntity):
         """Run when this Entity has been added to HA."""
         entities = self.hass.data[DOMAIN][self.config_entry.entry_id][ENTITIES]
         entities[self.unique_id] = self.unique_id
-        self.coordinator.async_add_listener(self._handle_coordinator_update)
         await super().async_added_to_hass()
 
     async def async_will_remove_from_hass(self):
         """Entity being removed from hass."""
         entities = self.hass.data[DOMAIN][self.config_entry.entry_id][ENTITIES]
         entities.pop(self.unique_id)
-        self.coordinator.async_remove_listener(self._handle_coordinator_update)
         await super().async_will_remove_from_hass()
 
     @callback
@@ -220,14 +220,12 @@ class AmplifiEthernetDeviceTracker(CoordinatorEntity, ScannerEntity):
         """Run when this Entity has been added to HA."""
         entities = self.hass.data[DOMAIN][self.config_entry.entry_id][ENTITIES]
         entities[self.unique_id] = self.unique_id
-        self.coordinator.async_add_listener(self._handle_coordinator_update)
         await super().async_added_to_hass()
 
     async def async_will_remove_from_hass(self):
         """Entity being removed from hass."""
         entities = self.hass.data[DOMAIN][self.config_entry.entry_id][ENTITIES]
         entities.pop(self.unique_id)
-        self.coordinator.async_remove_listener(self._handle_coordinator_update)
         await super().async_will_remove_from_hass()
 
     @callback

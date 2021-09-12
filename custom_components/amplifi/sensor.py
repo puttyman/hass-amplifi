@@ -18,31 +18,20 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     coordinator = hass.data[DOMAIN][config_entry.entry_id][COORDINATOR]
 
-    @callback
-    def async_discover_sensor():
-        """Discover and add a discovered sensor."""
-        for speed_sensor_type in WAN_SPEED_SENSOR_TYPES:
-            wan_sensor_unique_id = f"{DOMAIN}_wan_{speed_sensor_type}_speed"
-            if (
-                wan_sensor_unique_id
-                not in hass.data[DOMAIN][config_entry.entry_id][ENTITIES]
-            ):
-                async_add_entities(
-                    [
-                        AmplifiWanSpeedSensor(
-                            coordinator, config_entry, speed_sensor_type
-                        )
-                    ]
-                )
-
-    hass.data[DOMAIN][config_entry.entry_id][
-        COORDINATOR_LISTENER
-    ] = async_discover_sensor
-
-    async_discover_sensor()
-
-    coordinator.async_add_listener(async_discover_sensor)
-
+    """Add internet speed sensors."""
+    for speed_sensor_type in WAN_SPEED_SENSOR_TYPES:
+        wan_sensor_unique_id = f"{DOMAIN}_wan_{speed_sensor_type}_speed"
+        if (
+            wan_sensor_unique_id
+            not in hass.data[DOMAIN][config_entry.entry_id][ENTITIES]
+        ):
+            async_add_entities(
+                [
+                    AmplifiWanSpeedSensor(
+                        coordinator, config_entry, speed_sensor_type
+                    )
+                ]
+            )
 
 class AmplifiWanSpeedSensor(CoordinatorEntity, SensorEntity):
     """Sensor class representing a internet speed of amplifi."""
@@ -79,12 +68,6 @@ class AmplifiWanSpeedSensor(CoordinatorEntity, SensorEntity):
         """Return the unit of measurement."""
         return DATA_RATE_MEGABITS_PER_SECOND
 
-    # @property
-    # def device_state_attributes(self):
-    #     """Return device attributes."""
-    #     if self.coordinator.last_update_success and self.data is not None:
-    #         return self.data
-
     def update(self):
         _LOGGER.debug(f"entity={self.unique_id} update() was called")
         self._handle_coordinator_update()
@@ -93,14 +76,12 @@ class AmplifiWanSpeedSensor(CoordinatorEntity, SensorEntity):
         """Run when this Entity has been added to HA."""
         entities = self.hass.data[DOMAIN][self.config_entry.entry_id][ENTITIES]
         entities[self.unique_id] = self.unique_id
-        self.coordinator.async_add_listener(self._handle_coordinator_update)
         await super().async_added_to_hass()
 
     async def async_will_remove_from_hass(self):
         """Entity being removed from hass."""
         entities = self.hass.data[DOMAIN][self.config_entry.entry_id][ENTITIES]
         entities.pop(self.unique_id)
-        self.coordinator.async_remove_listener(self._handle_coordinator_update)
         await super().async_will_remove_from_hass()
 
     @callback

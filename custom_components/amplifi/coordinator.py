@@ -1,10 +1,12 @@
 """The Amplifi coordinator."""
 import logging
-
+import aiohttp
 from async_timeout import timeout
+
 from aiohttp.client_exceptions import ClientConnectorError
 from datetime import timedelta
 
+from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import DOMAIN
@@ -19,16 +21,22 @@ ETHERNET_PORTS_IDX = 4
 class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching Amplifi data from router."""
 
-    def __init__(self, hass, session, hostname, password):
+    def __init__(self, hass, hostname, password):
         """Initialize."""
-        self._session = session
         self._hostname = hostname
         self._password = password
         self._wifi_devices = {}
         self._ethernet_ports = {}
         self._wan_speeds = {"download": 0, "upload": 0}
-
-        self._client = AmplifiClient(self._session, self._hostname, self._password)
+        # Create jar for storing session cookies
+        self._jar = aiohttp.CookieJar(unsafe=True)
+        # Amplifi uses session cookie so we need a we client with a cookie jar
+        self._client_sesssion = async_create_clientsession(
+            hass, False, True, cookie_jar=self._jar
+        )
+        self._client = AmplifiClient(
+            self._client_sesssion, self._hostname, self._password
+        )
 
         # TODO: Make this a configurable value
         update_interval = timedelta(seconds=10)
@@ -91,10 +99,18 @@ class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
 
         _LOGGER.debug(f"wan_speeds={self._wan_speeds}")
 
+    def find_router_mac_in_topology(self, topology_data):
+        for k, v in topology_data.items():
+            if k == "role" and v == "Router" and "mac" in topology_data:
+                return topology_data["mac"]
+            elif isinstance(v, dict):
+                return self.find_router_mac_in_topology(v)
+
     def get_router_mac_addr(self):
-        for device in self.data[0]:
-            if self.data[0][device]["role"] == "Router":
-                return device
+        return self.find_router_mac_in_topology(self.data[0])
+
+    def async_stop_refresh(self):
+        super._async_stop_refresh()
 
     @property
     def wifi_devices(self):
