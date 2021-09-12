@@ -99,10 +99,15 @@ class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
 
         _LOGGER.debug(f"wan_speeds={self._wan_speeds}")
 
+    def find_router_mac_in_topology(self, topology_data):
+        for k, v in topology_data.items():
+            if k == "role" and v == "Router" and "mac" in topology_data:
+                return topology_data["mac"]
+            elif isinstance(v, dict):
+                return self.find_router_mac_in_topology(v)
+
     def get_router_mac_addr(self):
-        for device in self.data[0]:
-            if self.data[0][device]["role"] == "Router":
-                return device
+        return self.find_router_mac_in_topology(self.data[0])
 
     def async_stop_refresh(self):
         super._async_stop_refresh()
