@@ -28,6 +28,7 @@ class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
         self._wifi_devices = {}
         self._ethernet_ports = {}
         self._wan_speeds = {"download": 0, "upload": 0}
+        self._router_mac_addr = None
         # Create jar for storing session cookies
         self._jar = aiohttp.CookieJar(unsafe=True)
         # Amplifi uses session cookie so we need a we client with a cookie jar
@@ -102,12 +103,16 @@ class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
     def find_router_mac_in_topology(self, topology_data):
         for k, v in topology_data.items():
             if k == "role" and v == "Router" and "mac" in topology_data:
-                return topology_data["mac"]
+                self._router_mac_addr = topology_data["mac"]
             elif isinstance(v, dict):
-                return self.find_router_mac_in_topology(v)
+                self.find_router_mac_in_topology(v)
+                
 
     def get_router_mac_addr(self):
-        return self.find_router_mac_in_topology(self.data[0])
+        if self._router_mac_addr is None:
+            self.find_router_mac_in_topology(self.data[0])
+
+        return self._router_mac_addr
 
     def async_stop_refresh(self):
         super._async_stop_refresh()
