@@ -89,8 +89,6 @@ class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
         if self.data is None:
             return
         router_mac_addr = self.get_router_mac_addr()
-        if router_mac_addr is None:
-            return
 
         wan_port_data = self.data[ETHERNET_PORTS_IDX][router_mac_addr]["eth-0"]
         if "rx_bitrate" in wan_port_data:
