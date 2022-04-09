@@ -59,6 +59,8 @@ class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
 
     def extract_wifi_devices(self):
         """Extract wifi devices from raw response after a successful update."""
+        if self.data is None:
+            return
         wifi_devices = {}
         raw_wifi_devices = self.data[WIFI_DEVICES_IDX]
         if raw_wifi_devices:
@@ -76,13 +78,19 @@ class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
         self._wifi_devices = wifi_devices
 
     def extract_ethernet_ports(self):
+        if self.data is None:
+            return
         router_mac_addr = self.get_router_mac_addr()
         self._ethernet_ports = self.data[ETHERNET_PORTS_IDX][router_mac_addr]
 
         _LOGGER.debug(f"ports={self.ethernet_ports}")
 
     def extract_wan_speeds(self):
+        if self.data is None:
+            return
         router_mac_addr = self.get_router_mac_addr()
+        if router_mac_addr is None:
+            return
 
         wan_port_data = self.data[ETHERNET_PORTS_IDX][router_mac_addr]["eth-0"]
         if "rx_bitrate" in wan_port_data:
