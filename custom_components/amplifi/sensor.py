@@ -36,13 +36,13 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class AmplifiWanSpeedSensor(CoordinatorEntity, SensorEntity):
     """Sensor class representing a internet speed of amplifi."""
 
-    name = None
+    _name = None
     unique_id = None
 
     def __init__(self, coordinator, config_entry, speed_sensor_type):
         """Initialize amplifi sensor."""
         self.unique_id = f"{DOMAIN}_wan_{speed_sensor_type}_speed"
-        self.name = self.unique_id
+        self._name = self.unique_id
         self.config_entry = config_entry
         self._speed_sensor_type = speed_sensor_type
         self._value = 0
@@ -52,6 +52,10 @@ class AmplifiWanSpeedSensor(CoordinatorEntity, SensorEntity):
     def available(self):
         """Return if sensor is available."""
         return True
+    
+    @property
+    def name(self) -> str | None:
+        return self._name
 
     @property
     def state(self):
