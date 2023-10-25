@@ -1,5 +1,9 @@
 """Platform for sensor integration."""
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import (
+    SensorEntity,
+    SensorStateClass,
+    SensorDeviceClass,
+)
 import logging
 
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
@@ -46,6 +50,8 @@ class AmplifiWanSpeedSensor(CoordinatorEntity, SensorEntity):
         self.config_entry = config_entry
         self._speed_sensor_type = speed_sensor_type
         self._value = 0
+        self._attr_device_class = SensorDeviceClass.DATA_RATE
+        self._attr_state_class = SensorStateClass.MEASUREMENT
         super().__init__(coordinator)
 
     @property
