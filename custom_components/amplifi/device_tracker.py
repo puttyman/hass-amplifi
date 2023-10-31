@@ -86,7 +86,7 @@ class AmplifiWifiDeviceTracker(CoordinatorEntity, ScannerEntity):
         elif self._data is not None and "Address" in self._data:
             self._name = f"{DOMAIN}_{self._data['Address']}"
         else:
-            self._name = self.unique_id
+            self._name = f"{DOMAIN}_{self.unique_id}"
 
         self._name = re.sub("[^0-9a-zA-Z]+", "_", self._name).lower()
 
