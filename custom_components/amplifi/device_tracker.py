@@ -131,14 +131,6 @@ class AmplifiWifiDeviceTracker(CoordinatorEntity, ScannerEntity):
         return None
 
     @property
-    def connected_to(self):
-        """Return mac address of the AP this device is connected to."""
-        if "connected_to" in self._data:
-            return self._data["connected_to"]
-
-        return None
-
-    @property
     def extra_state_attributes(self):
         """Return extra attributes."""
         if self.coordinator.last_update_success and self._data is not None:
