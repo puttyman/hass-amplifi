@@ -131,8 +131,8 @@ class AmplifiWifiDeviceTracker(CoordinatorEntity, ScannerEntity):
         return None
 
     @property
-    def hostname(self):
-        """Return hostname of the device."""
+    def connected_to(self):
+        """Return mac address of the AP this device is connected to."""
         if "connected_to" in self._data:
             return self._data["connected_to"]
 
