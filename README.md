@@ -1,14 +1,13 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 
-# Hass Amplifi 2.0.0
+# Hass Amplifi 2.0.5
 
-**BREAKING CHANGE**
- - 2.0.0 now uses device_tracker instead of sensor for wifi presence
 
 A sensor hass integration that allows you to monitor devices connected to Amplifi on Wifi (LAN ports in progress).
+This is a fork of the original repo by @puttyman. This repo is largely for my own use but may receive more frequent support that the original repo.
 
 You can use this addon to perform the following automations:
-- As a presense sensor (when your mobile connects to wifi)
+- As a presense sensor (when your mobile connects to wifi, or to a specific AP/Mesh device)
 - Internet bandwidth usage monitor (amplifi reports data transfers on the WAN port). This integration will add 2 sensors.
 - When your TV is on/off (monitoring its wifi traffic)
 - Security (Create alerts for unknown devices connected to your wifi)
@@ -21,7 +20,7 @@ You can use this addon to perform the following automations:
 ### Install with HACS (recomended)
 
 Do you you have [HACS](https://community.home-assistant.io/t/custom-component-hacs) installed? Once you have HACS.
-- Add `puttyman/hass-amplifi` as a custom repository
+- Add `hawksj/hass-amplifi` as a custom repository
 - Click on th **Install** button for Hass Amplifi
 
 ### Install manually
