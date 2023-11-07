@@ -2,15 +2,16 @@
   "domain": "amplifi",
   "name": "Amplifi",
   "config_flow": true,
-  "documentation": "https://github.com/puttyman/hass-amplifi",
-  "issue_tracker": "https://github.com/puttyman/hass-amplifi/issues",
+  "documentation": "https://github.com/hawksj/hass-amplifi",
+  "issue_tracker": "https://github.com/hawksj/hass-amplifi/issues",
   "requirements": [],
   "ssdp": [],
   "zeroconf": [],
   "homekit": {},
   "dependencies": [],
   "codeowners": [
-    "@puttyman"
+    "@puttyman",
+    "@hawksj"
   ],
   "version": "2.0.5"
 }
