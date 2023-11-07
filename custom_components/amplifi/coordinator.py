@@ -72,6 +72,7 @@ class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
                         ]:
                             device_info = raw_wifi_devices[access_point][wifi_band][
                                 network_type
+                            device_info["connected_to"] = access_point
                             ][macAddr]
                             wifi_devices[macAddr] = device_info
 
