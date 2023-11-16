@@ -1,5 +1,9 @@
 """Platform for sensor integration."""
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import (
+    SensorEntity,
+    SensorStateClass,
+    SensorDeviceClass,
+)
 import logging
 
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
@@ -11,7 +15,8 @@ from .const import DOMAIN, COORDINATOR, COORDINATOR_LISTENER, ENTITIES
 
 _LOGGER = logging.getLogger(__name__)
 WAN_SPEED_SENSOR_TYPES = ["download", "upload"]
-
+sensordeviceclass = SensorDeviceClass.DATA_RATE
+sensorstateclass = SensorStateClass.MEASUREMENT
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Add sensors for passed config_entry in HA."""
@@ -46,6 +51,8 @@ class AmplifiWanSpeedSensor(CoordinatorEntity, SensorEntity):
         self.config_entry = config_entry
         self._speed_sensor_type = speed_sensor_type
         self._value = 0
+        self._attr_device_class = sensordeviceclass
+        self._attr_state_class = sensorstateclass
         super().__init__(coordinator)
 
     @property
