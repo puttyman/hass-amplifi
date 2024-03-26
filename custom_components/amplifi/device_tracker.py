@@ -6,7 +6,7 @@ from datetime import datetime
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.components.device_tracker.config_entry import ScannerEntity
-from homeassistant.components.device_tracker import SOURCE_TYPE_ROUTER
+from homeassistant.components.device_tracker import SourceType
 from homeassistant.core import callback
 from .const import DOMAIN, COORDINATOR, COORDINATOR_LISTENER, ENTITIES
 from .coordinator import AmplifiDataUpdateCoordinator
@@ -98,7 +98,7 @@ class AmplifiWifiDeviceTracker(CoordinatorEntity, ScannerEntity):
     @property
     def source_type(self) -> str:
         """Return the source type."""
-        return SOURCE_TYPE_ROUTER
+        return SourceType.ROUTER
 
     @property
     def is_connected(self):
@@ -194,7 +194,7 @@ class AmplifiEthernetDeviceTracker(CoordinatorEntity, ScannerEntity):
     @property
     def source_type(self) -> str:
         """Return the source type."""
-        return SOURCE_TYPE_ROUTER
+        return SourceType.ROUTER
 
     @property
     def is_connected(self):
