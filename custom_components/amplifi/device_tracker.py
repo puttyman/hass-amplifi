@@ -65,6 +65,7 @@ class AmplifiWifiDeviceTracker(CoordinatorEntity, ScannerEntity):
     """Representing a wireless device connected to amplifi."""
 
     _name = None
+    _description = None
     _data = None
     _connected = True
     unique_id = None
@@ -81,19 +82,27 @@ class AmplifiWifiDeviceTracker(CoordinatorEntity, ScannerEntity):
 
         if self._data is not None and "Description" in self._data:
             self._name = f"{DOMAIN}_{self._data['Description']}"
+            self._description = self._data['Description']
         elif self._data is not None and "HostName" in self._data:
             self._name = f"{DOMAIN}_{self._data['HostName']}"
+            self._description = self._data['HostName']
         elif self._data is not None and "Address" in self._data:
             self._name = f"{DOMAIN}_{self._data['Address']}"
+            self._description = self._data['Address']
         else:
             self._name = f"{DOMAIN}_{self.unique_id}"
 
         self._name = re.sub("[^0-9a-zA-Z]+", "_", self._name).lower()
+        # Override the entity_id so we can provide a better friendly name
+        self.entity_id = f'device_tracker.{self._name}'
 
     @property
     def name(self):
-        """Return the name."""
-        return self._name
+        """Return the friendly name."""
+        if self._description is not None:
+            return self._description
+        else:
+            return self._name
 
     @property
     def source_type(self) -> str:
@@ -188,7 +197,9 @@ class AmplifiEthernetDeviceTracker(CoordinatorEntity, ScannerEntity):
     """Representing an ethernet port of amplifi."""
 
     _name = None
+    _description = None
     _data = {}
+    _device_info = {}
     _connected = True
     _is_wan = False
     unique_id = None
@@ -202,10 +213,31 @@ class AmplifiEthernetDeviceTracker(CoordinatorEntity, ScannerEntity):
         self._data = coordinator.ethernet_ports[f"{self._data_key}"]
         self.config_entry = config_entry
 
+        # Optional device info for connected Ethernet ports
+        if self._port in coordinator.ethernet_devices:
+            self._device_info = coordinator.ethernet_devices[self._port]
+
+        if self._device_info is not None and "description" in self._device_info:
+            self._description = self._device_info['description']
+        elif self._device_info is not None and "host_name" in self._device_info:
+            self._description = self._device_info['host_name']
+        elif self._device_info is not None and "ip" in self._device_info:
+            self._description = self._device_info['ip']
+        else:
+            self._description = f"Ethernet Port {self._port}"
+
+        self._name = self.unique_id
+        
+        # Override the entity_id so we can provide a better friendly name
+        self.entity_id = f'device_tracker.{self._name}'
+
     @property
     def name(self):
-        """Return the name."""
-        return self.unique_id
+        """Return the friendly name."""
+        if self._description is not None:
+            return self._description
+        else:
+            return self._name
 
     @property
     def source_type(self) -> str:
