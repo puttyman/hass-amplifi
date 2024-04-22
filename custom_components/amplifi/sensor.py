@@ -9,7 +9,7 @@ import logging
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.core import callback
-from homeassistant.const import DATA_RATE_MEGABITS_PER_SECOND
+from homeassistant.const import UnitOfDataRate
 
 from .const import DOMAIN, COORDINATOR, COORDINATOR_LISTENER, ENTITIES
 
@@ -77,7 +77,7 @@ class AmplifiWanSpeedSensor(CoordinatorEntity, SensorEntity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
-        return DATA_RATE_MEGABITS_PER_SECOND
+        return UnitOfDataRate.MEGABITS_PER_SECOND
 
     def update(self):
         _LOGGER.debug(f"entity={self.unique_id} update() was called")
