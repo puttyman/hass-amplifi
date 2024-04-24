@@ -10,9 +10,13 @@
     },
     "step": {
       "user": {
+        "title": "AmpliFi Login",
+        "description": "Enter the admin details of your AmpliFi router",
         "data": {
-          "host": "Host",
-          "password": "Password"
+          "host": "AmpliFi Router Hostname/IP Address",
+          "password": "AmpliFi Router Admin Password",
+          "enable": "Enable Newly Discovered Devices",
+          "scan_interval": "Update interval in seconds"
         }
       }
     }
