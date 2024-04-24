@@ -5,7 +5,7 @@
         "title": "AmpliFi Login",
         "description": "Enter the admin details of your AmpliFi router",
         "data": {
-          "host": [%key:common::config_flow::data::host%]",
+          "host": "[%key:common::config_flow::data::host%]",
           "password": "[%key:common::config_flow::data::password%]",
           "enable": "[%key:common::config_flow::data::enable%]",
           "scan_interval": "Update interval in seconds"
