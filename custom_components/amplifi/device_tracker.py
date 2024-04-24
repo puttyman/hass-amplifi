@@ -148,7 +148,7 @@ class AmplifiWifiDeviceTracker(CoordinatorEntity, ScannerEntity):
     @property
     def entity_registry_enabled_default(self) -> bool:
         """Return if the entity should be enabled when first added to the entity registry."""
-        return hass.data[CONF_ENABLE]
+        return CONF_ENABLE
 
     def update(self):
         _LOGGER.debug(f"entity={self.unique_id} update() was called")
