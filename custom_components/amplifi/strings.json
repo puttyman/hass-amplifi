@@ -7,7 +7,7 @@
         "data": {
           "host": "[%key:common::config_flow::data::host%]",
           "password": "[%key:common::config_flow::data::password%]",
-          "enable": "[%key:common::config_flow::data::enable%]",
+          "enable_new_devices": "[%key:common::config_flow::data::enable_new_devices%]",
           "scan_interval": "Update interval in seconds"
         }
       }

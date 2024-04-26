@@ -15,7 +15,7 @@
         "data": {
           "host": "AmpliFi Router Hostname/IP Address",
           "password": "AmpliFi Router Admin Password",
-          "enable": "Enable Newly Discovered Devices",
+          "enable_new_devices": "Enable Newly Discovered Devices",
           "scan_interval": "Update interval in seconds"
         }
       }
