@@ -1,6 +1,6 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 
-# Hass Amplifi 2.0.0
+# Hass Amplifi 2.1.0
 
 **BREAKING CHANGE**
  - 2.0.0 now uses device_tracker instead of sensor for wifi presence
@@ -8,7 +8,7 @@
 A sensor hass integration that allows you to monitor devices connected to Amplifi on Wifi (LAN ports in progress).
 
 You can use this addon to perform the following automations:
-- As a presense sensor (when your mobile connects to wifi)
+- As a presense sensor (when your mobile connects to WiFi, or a specific access point)
 - Internet bandwidth usage monitor (amplifi reports data transfers on the WAN port). This integration will add 2 sensors.
 - When your TV is on/off (monitoring its wifi traffic)
 - Security (Create alerts for unknown devices connected to your wifi)
