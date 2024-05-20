@@ -8,7 +8,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.components.device_tracker.config_entry import ScannerEntity
 from homeassistant.components.device_tracker import SourceType
 from homeassistant.core import callback
-from .const import DOMAIN, COORDINATOR, COORDINATOR_LISTENER, ENTITIES
+from .const import DOMAIN, COORDINATOR, COORDINATOR_LISTENER, ENTITIES, CONF_ENABLE_NEW_DEVICES
 from .coordinator import AmplifiDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -144,6 +144,14 @@ class AmplifiWifiDeviceTracker(CoordinatorEntity, ScannerEntity):
         if self.coordinator.last_update_success and self._data is not None:
             return {**self._data, "last_seen": datetime.now().isoformat()}
         return {}
+
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if the entity should be enabled when first added to the entity registry."""
+        if self.config_entry.data.get(CONF_ENABLE_NEW_DEVICES, False):
+            return True
+        
+        return False
 
     def update(self):
         _LOGGER.debug(f"entity={self.unique_id} update() was called")
