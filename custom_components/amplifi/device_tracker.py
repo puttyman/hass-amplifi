@@ -37,6 +37,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                     ]
                 )
 
+        is_device = False
         for port in range(0, 5):
             port_unique_id = f"{DOMAIN}_eth_port_{port}"
             if port_unique_id not in hass.data[DOMAIN][config_entry.entry_id][ENTITIES]:
@@ -46,6 +47,21 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                             coordinator,
                             port,
                             config_entry,
+                            is_device,
+                        )
+                    ]
+                )
+
+        is_device = True
+        for mac_addr in coordinator.ethernet_devices:
+            if mac_addr not in hass.data[DOMAIN][config_entry.entry_id][ENTITIES]:
+                async_add_entities(
+                    [
+                        AmplifiEthernetDeviceTracker(
+                            coordinator,
+                            mac_addr,
+                            config_entry,
+                            is_device,
                         )
                     ]
                 )
@@ -65,6 +81,7 @@ class AmplifiWifiDeviceTracker(CoordinatorEntity, ScannerEntity):
     """Representing a wireless device connected to amplifi."""
 
     _name = None
+    _description = None
     _data = None
     _connected = True
     unique_id = None
@@ -81,19 +98,27 @@ class AmplifiWifiDeviceTracker(CoordinatorEntity, ScannerEntity):
 
         if self._data is not None and "Description" in self._data:
             self._name = f"{DOMAIN}_{self._data['Description']}"
+            self._description = self._data['Description']
         elif self._data is not None and "HostName" in self._data:
             self._name = f"{DOMAIN}_{self._data['HostName']}"
+            self._description = self._data['HostName']
         elif self._data is not None and "Address" in self._data:
             self._name = f"{DOMAIN}_{self._data['Address']}"
+            self._description = self._data['Address']
         else:
             self._name = f"{DOMAIN}_{self.unique_id}"
 
         self._name = re.sub("[^0-9a-zA-Z]+", "_", self._name).lower()
+        # Override the entity_id so we can provide a better friendly name
+        self.entity_id = f'device_tracker.{self._name}'
 
     @property
     def name(self):
-        """Return the name."""
-        return self._name
+        """Return the friendly name."""
+        if self._description is not None:
+            return self._description
+        else:
+            return self._name
 
     @property
     def source_type(self) -> str:
@@ -188,24 +213,62 @@ class AmplifiEthernetDeviceTracker(CoordinatorEntity, ScannerEntity):
     """Representing an ethernet port of amplifi."""
 
     _name = None
+    _description = None
     _data = {}
+    _device_info = {}
     _connected = True
     _is_wan = False
+    _is_device = False
     unique_id = None
 
-    def __init__(self, coordinator: AmplifiDataUpdateCoordinator, port, config_entry):
+    def __init__(self, coordinator: AmplifiDataUpdateCoordinator, identifier, config_entry, is_device):
         """Initialize amplifi ethernet device tracker."""
         super().__init__(coordinator)
-        self._port = port
-        self._data_key = f"eth-{port}"
-        self.unique_id = f"{DOMAIN}_eth_port_{self._port}"
-        self._data = coordinator.ethernet_ports[f"{self._data_key}"]
-        self.config_entry = config_entry
+        if is_device:
+            self._mac_addr = identifier
+            self._data_key = self._mac_addr
+            self.unique_id = self._mac_addr
+            self._data = coordinator.ethernet_devices[f"{self._data_key}"]
+            self.config_entry = config_entry
+
+            # Optional device info for connected Ethernet ports
+            if self._mac_addr in coordinator.ethernet_devices:
+                self._device_info = coordinator.ethernet_devices[self._mac_addr]
+
+            if self._device_info is not None and "description" in self._device_info:
+                self._name = f"{DOMAIN}_{self._data['description']}"
+                self._description = self._device_info['description']
+            elif self._device_info is not None and "host_name" in self._device_info:
+                self._name = f"{DOMAIN}_{self._data['host_name']}"
+                self._description = self._device_info['host_name']
+            elif self._device_info is not None and "ip" in self._device_info:
+                self._name = f"{DOMAIN}_{self._data['ip']}"
+                self._description = self._device_info['ip']
+            else:
+                self._name = f"{DOMAIN}_{self._mac_addr}"
+                self._description = self._mac_addr
+
+        else:
+            self._port = identifier
+            self._data_key = f"eth-{self._port}"
+            self.unique_id = f"{DOMAIN}_eth_port_{self._port}"
+            self._data = coordinator.ethernet_ports[f"{self._data_key}"]
+            self.config_entry = config_entry
+            self._description = f"Ethernet Port {self._port}"
+            self._name = self.unique_id
+
+        self._is_device = is_device
+
+        # Override the entity_id so we can provide a better friendly name
+        self.entity_id = f'device_tracker.{self._name}'
 
     @property
     def name(self):
-        """Return the name."""
-        return self.unique_id
+        """Return the friendly name."""
+        if self._description is not None:
+            return self._description
+        else:
+            return self._name
 
     @property
     def source_type(self) -> str:
@@ -214,12 +277,23 @@ class AmplifiEthernetDeviceTracker(CoordinatorEntity, ScannerEntity):
 
     @property
     def is_connected(self):
-        return "link" in self._data and self._data["link"] == True
+        if self._is_device:
+            return self._connected
+        else:
+            return "link" in self._data and self._data["link"] == True
 
     @property
     def icon(self):
         """Return the icon."""
-        return "mdi:ethernet"
+        if self._is_device:
+            return "mdi:lan-connect"
+        else:
+            return "mdi:ethernet"
+
+    @property
+    def mac_address(self):
+        """Return the mac address of the device."""
+        return self.unique_id
 
     @property
     def extra_state_attributes(self):
@@ -246,8 +320,10 @@ class AmplifiEthernetDeviceTracker(CoordinatorEntity, ScannerEntity):
 
     @callback
     def _handle_coordinator_update(self):
-        if self._data_key in self.coordinator.ethernet_ports:
+        if not self._is_device and self._data_key in self.coordinator.ethernet_ports:
             self._data = self.coordinator.ethernet_ports[self._data_key]
+        elif self._is_device and self._data_key in self.coordinator.ethernet_devices:
+            self._data = self.coordinator.ethernet_devices[self._data_key]
 
         _LOGGER.debug(
             f"entity={self.unique_id} was updated via _handle_coordinator_update"
