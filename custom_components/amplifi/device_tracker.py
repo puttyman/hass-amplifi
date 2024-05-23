@@ -291,6 +291,11 @@ class AmplifiEthernetDeviceTracker(CoordinatorEntity, ScannerEntity):
             return "mdi:ethernet"
 
     @property
+    def mac_address(self):
+        """Return the mac address of the device."""
+        return self.unique_id
+
+    @property
     def extra_state_attributes(self):
         """Return extra attributes."""
         if self.coordinator.last_update_success and self._data is not None:
