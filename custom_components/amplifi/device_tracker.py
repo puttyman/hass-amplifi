@@ -302,6 +302,17 @@ class AmplifiEthernetDeviceTracker(CoordinatorEntity, ScannerEntity):
             return {**self._data, "last_seen": datetime.now().isoformat()}
         return {}
 
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if the entity should be enabled when first added to the entity registry."""
+        if self._is_device:
+            if self.config_entry.data.get(CONF_ENABLE_NEW_DEVICES, False):
+                return True
+            else:
+                return False
+        else:
+            return True
+
     def update(self):
         _LOGGER.debug(f"entity={self.unique_id} update() was called")
         self._handle_coordinator_update()
