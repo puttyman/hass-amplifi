@@ -15,6 +15,8 @@ from .client import AmplifiClient, AmplifiClientError
 _LOGGER = logging.getLogger(__name__)
 
 WIFI_DEVICES_IDX = 1
+DEVICES_INFO_IDX = 2
+ETHERNET_PORT_TO_DEVICE_IDX = 3
 ETHERNET_PORTS_IDX = 4
 
 
@@ -27,6 +29,7 @@ class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
         self._password = password
         self._wifi_devices = {}
         self._ethernet_ports = {}
+        self._ethernet_devices = {}
         self._wan_speeds = {"download": 0, "upload": 0}
         self._router_mac_addr = None
         # Create jar for storing session cookies
@@ -46,6 +49,7 @@ class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=update_interval)
         super().async_add_listener(self.extract_wifi_devices)
         super().async_add_listener(self.extract_ethernet_ports)
+        super().async_add_listener(self.extract_ethernet_devices)
         super().async_add_listener(self.extract_wan_speeds)
 
     async def _async_update_data(self):
@@ -82,9 +86,30 @@ class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
         if self.data is None:
             return
         router_mac_addr = self.get_router_mac_addr()
-        self._ethernet_ports = self.data[ETHERNET_PORTS_IDX][router_mac_addr]
 
+        self._ethernet_ports = self.data[ETHERNET_PORTS_IDX][router_mac_addr]
         _LOGGER.debug(f"ports={self.ethernet_ports}")
+
+    def extract_ethernet_devices(self):
+        """Try get additional device info for connected ethernet ports."""
+        if self.data is None:
+            return
+        router_mac_addr = self.get_router_mac_addr()
+
+        ethernet_devices = {}
+        raw_devices_info = self.data[DEVICES_INFO_IDX]
+        raw_device_to_eth_index = self.data[ETHERNET_PORT_TO_DEVICE_IDX][router_mac_addr]
+
+        if raw_device_to_eth_index and raw_devices_info:
+                for device in raw_device_to_eth_index:
+                    device_info = raw_devices_info[device]
+                    port = raw_device_to_eth_index[device]
+                    device_info["connected_to_port"] = port
+                    ethernet_devices[device] = device_info
+
+        self._ethernet_devices = ethernet_devices
+
+        _LOGGER.debug(f"ethernet_devices={self._ethernet_devices}")
 
     def extract_wan_speeds(self):
         if self.data is None:
@@ -133,6 +158,11 @@ class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
     def ethernet_ports(self):
         """Return the ethernet ports."""
         return self._ethernet_ports
+    
+    @property
+    def ethernet_devices(self):
+        """Return the ethernet devices."""
+        return self._ethernet_devices
 
     @property
     def wan_speeds(self):
