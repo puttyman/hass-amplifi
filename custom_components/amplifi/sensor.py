@@ -55,14 +55,16 @@ class AmplifiWanSpeedSensor(CoordinatorEntity, SensorEntity):
         self._attr_state_class = sensorstateclass
         super().__init__(coordinator)
 
+        self.entity_id = f'sensor.{self._name}'
+
     @property
     def available(self):
         """Return if sensor is available."""
         return True
-    
+
     @property
     def name(self) -> str | None:
-        return self._name
+        return f"Amplifi WAN {self._speed_sensor_type.title()} Speed"
 
     @property
     def state(self):
