@@ -107,6 +107,7 @@ class AmplifiWifiDeviceTracker(CoordinatorEntity, ScannerEntity):
             self._description = self._data['Address']
         else:
             self._name = f"{DOMAIN}_{self.unique_id}"
+            self._description = self.unique_id.upper()
 
         self._name = re.sub("[^0-9a-zA-Z]+", "_", self._name).lower()
         # Override the entity_id so we can provide a better friendly name
@@ -293,7 +294,8 @@ class AmplifiEthernetDeviceTracker(CoordinatorEntity, ScannerEntity):
     @property
     def mac_address(self):
         """Return the mac address of the device."""
-        return self.unique_id
+        if self._is_device:
+            return self.unique_id
 
     @property
     def extra_state_attributes(self):
