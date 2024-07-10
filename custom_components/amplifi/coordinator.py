@@ -111,6 +111,9 @@ class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
             self._ethernet_devices = ethernet_devices
     
             _LOGGER.debug(f"ethernet_devices={self._ethernet_devices}")
+        else:
+            _LOGGER.debug(f"No ethernet devices found")
+            return
 
     def extract_wan_speeds(self):
         if self.data is None:
