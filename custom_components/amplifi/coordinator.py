@@ -96,20 +96,24 @@ class AmplifiDataUpdateCoordinator(DataUpdateCoordinator):
             return
         router_mac_addr = self.get_router_mac_addr()
 
-        ethernet_devices = {}
-        raw_devices_info = self.data[DEVICES_INFO_IDX]
-        raw_device_to_eth_index = self.data[ETHERNET_PORT_TO_DEVICE_IDX][router_mac_addr]
-
-        if raw_device_to_eth_index and raw_devices_info:
-                for device in raw_device_to_eth_index:
-                    device_info = raw_devices_info[device]
-                    port = raw_device_to_eth_index[device]
-                    device_info["connected_to_port"] = port
-                    ethernet_devices[device] = device_info
-
-        self._ethernet_devices = ethernet_devices
-
-        _LOGGER.debug(f"ethernet_devices={self._ethernet_devices}")
+        if router_mac_addr in self.data[ETHERNET_PORT_TO_DEVICE_IDX]:
+            ethernet_devices = {}
+            raw_devices_info = self.data[DEVICES_INFO_IDX]
+            raw_device_to_eth_index = self.data[ETHERNET_PORT_TO_DEVICE_IDX][router_mac_addr]
+    
+            if raw_device_to_eth_index and raw_devices_info:
+                    for device in raw_device_to_eth_index:
+                        device_info = raw_devices_info[device]
+                        port = raw_device_to_eth_index[device]
+                        device_info["connected_to_port"] = port
+                        ethernet_devices[device] = device_info
+    
+            self._ethernet_devices = ethernet_devices
+    
+            _LOGGER.debug(f"ethernet_devices={self._ethernet_devices}")
+        else:
+            _LOGGER.debug(f"No ethernet devices found")
+            return
 
     def extract_wan_speeds(self):
         if self.data is None:
