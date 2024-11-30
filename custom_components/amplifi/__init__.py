@@ -38,7 +38,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     @callback
     def async_stop_coordinator():
-        coordinator._async_stop_refresh(None)
+        coordinator.async_stop_refresh()
 
     entry.async_on_unload(async_stop_coordinator)
 
